@@ -1,6 +1,20 @@
-# Stock Price Prediction App 📈  
+📈 Stock Sage  
 
-<!-- This is a Stock Price Prediction App built using Streamlit,Pandas, and NumPy. It analyzes historical stock data and forecasts future prices using machine learning models. The app provides interactive visualizations and insights for better investment decisions. 🚀  
+Stock Sage is a powerful stock and crypto forecasting tool that provides real-time market insights, AI-powered predictions, and portfolio simulations to help users make informed investment decisions.  
 
-It fetches real-time stock data, processes it efficiently, and applies predictive algorithms to generate trends. The user-friendly interface makes it easy to explore stock performance and make informed financial choices.--> 
-<img src= "Images\Screenshot 2025-02-26 013133.png" width="500" , height="500"/> 
+ 🚀 Features  
+
+✅ Stock & Crypto Price Prediction (Powered by Facebook Prophet)  
+✅ Real-time Market Tracking with interactive charts (Plotly)  
+✅ Portfolio Simulator to analyze investment growth  
+✅ User Authentication (JSON-based login system)  
+✅ Custom Styling & Animations (CSS + JavaScript)  
+
+ 🛠️ Tech Stack  
+
+- Frontend: Streamlit, HTML, CSS, JavaScript  
+- Backend: Python, JSON (for authentication)  
+- Machine Learning: Facebook Prophet (Time-Series Forecasting)  
+- Data Processing & Visualization: Pandas, Plotly  
+
+
