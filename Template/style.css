@@ -1,0 +1,91 @@
+/* Global Styles */
+body, .stApp {
+    background-color: #f0f8ff;
+    color: #005f9e;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Welcome Page */
+.stImage {
+    display: block;
+    margin: 0 auto;
+}
+
+.stTitle {
+    text-align: center;
+    color: #007acc;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.stSubheader {
+    text-align: center;
+    color: #005f9e;
+    font-size: 1.3rem;
+}
+
+/* Buttons */
+button {
+    background-color: #007acc !important;
+    color: white !important;
+    border-radius: 8px !important;
+    font-size: 1.1rem !important;
+    padding: 10px 20px !important;
+    border: none !important;
+}
+
+button:hover {
+    background-color: #005f9e !important;
+}
+
+/* Input Fields */
+input[type="text"], input[type="password"], select {
+    border: 2px solid #007acc !important;
+    border-radius: 6px !important;
+    padding: 10px !important;
+    width: 100% !important;
+}
+
+/* Sidebar */
+.css-1d391kg { /* Streamlit default sidebar class */
+    background-color: #e3f2fd !important;
+}
+
+/* Cards and Containers */
+.stMarkdown, .stAlert {
+    background-color: white !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Data Tables */
+.stDataFrame, .stTable {
+    background-color: white !important;
+    border: 2px solid #007acc !important;
+    border-radius: 8px !important;
+}
+
+/* Charts */
+.plotly-graph-div {
+    background-color: white !important;
+    border-radius: 10px !important;
+    padding: 15px !important;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Success, Warning, Error Messages */
+.stSuccess {
+    background-color: #d1f2eb !important;
+    color: #007a33 !important;
+}
+
+.stWarning {
+    background-color: #fff3cd !important;
+    color: #856404 !important;
+}
+
+.stError {
+    background-color: #f8d7da !important;
+    color: #721c24 !important;
+}
