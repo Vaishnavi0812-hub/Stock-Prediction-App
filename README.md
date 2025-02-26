@@ -20,23 +20,23 @@ Stock Sage is a powerful stock and crypto forecasting tool that provides real-ti
  📸 Screenshots  
 
   Login Page  
-![Login]("Template\Images\Login page.png")
+![Login]("Template/Images/Login page.png")
 
   Stock Dashboard  
-![Dashboard]("Template\Images\Dashboard page.png")
+![Dashboard]("Template/Images/Dashboard page.png")
 
   Raw Data
-![Stock graph]("Template\Images\Raw data page.png")
+![Stock graph]("Template/Images/Raw data page.png")
 
  Forecast Components  
-![Forecast]("D:\Final Project\Template\Images\Forecast components.png")
+![Forecast]("D:\Final Project/Template/Images/Forecast components.png")
 
  Crypto tracker  
-![Crypto]("Template\Images\Crypto Tracker.png")
+![Crypto]("Template/Images/Crypto Tracker.png")
 
 Portfolio Simulator  
-![Portfolio]("Template\Images\Portfolio Simulator.png")
+![Portfolio]("Template/Images/Portfolio Simulator.png")
 
 Investment Growth and Guidance  
-![Investment]("Template\Images\Investment growth.png")
+![Investment]("Template/Images/Investment growth.png")
 
