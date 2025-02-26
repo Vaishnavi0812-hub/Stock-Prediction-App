@@ -20,23 +20,23 @@ Stock Sage is a powerful stock and crypto forecasting tool that provides real-ti
  📸 Screenshots  
 
   Login Page  
-![Login]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Login page.png")
+![Login]("D:\Final Project\Template\Images\Login page.png")
 
   Stock Dashboard  
-![Dashboard]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Dashboard page.png")
+![Dashboard]("D:\Final Project\Template\Images\Dashboard page.png")
 
   Raw Data
-![Stock graph]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Raw data page.png")
+![Stock graph](""D:\Final Project\Template\Images\Raw data page.png")
 
  Forecast Components  
-![Forecast]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Forecast components.png")
+![Forecast]("D:\Final Project\Template\Images\Forecast components.png")
 
  Crypto tracker  
-![Crypto]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Crypto Tracker.png")
+![Crypto](""D:\Final Project\Template\Images\Crypto Tracker.png")
 
 Portfolio Simulator  
-![Portfolio]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Portfolio Simulator.png")
+![Portfolio]("D:\Final Project\Template\Images\Portfolio Simulator.png")
 
 Investment Growth and Guidance  
-![Investment]("C:\Users\vaishnavi\OneDrive\Pictures\Screenshots\Investment growth.png")
+![Investment]("D:\Final Project\Template\Images\Investment growth.png")
 
