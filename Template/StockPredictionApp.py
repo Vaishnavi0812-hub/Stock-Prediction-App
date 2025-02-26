@@ -10,9 +10,13 @@ import os
 import json
 
 def load_css(file_name="style.css"):
-    with open(file_name, "r") as f:
-        css = f"<style>{f.read()}</style>"
-        st.markdown(css, unsafe_allow_html=True)
+    file_path = os.path.join(os.path.dirname(__file__), file_name)
+    if os.path.exists(file_path):
+        with open(file_path, "r") as f:
+            css = f"<style>{f.read()}</style>"
+            st.markdown(css, unsafe_allow_html=True)
+    else:
+        st.warning(f"⚠️ CSS file not found: {file_name}")
 
 load_css()  # Load the CSS file
 
