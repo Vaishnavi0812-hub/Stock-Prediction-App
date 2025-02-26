@@ -5,6 +5,3 @@ plotly
 pandas
 numpy
 matplotlib
-time
-os
-json
