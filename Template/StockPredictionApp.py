@@ -8,6 +8,14 @@ from prophet.plot import plot_plotly
 import time
 import os
 import json
+import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
+from pmdarima import auto_arima
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense, Dropout
+from sklearn.preprocessing import MinMaxScaler
 
 def load_css(file_name="style.css"):
     with open(file_name, "r") as f:
@@ -15,7 +23,6 @@ def load_css(file_name="style.css"):
         st.markdown(css, unsafe_allow_html=True)
 
 load_css()  # Load the CSS file
-
 
 # Constants
 START = "2010-01-01"
@@ -242,15 +249,13 @@ selected_asset = st.sidebar.selectbox("📊 Choose Asset", stocks + cryptos)
 def load_data(ticker):
     data = yf.download(ticker, START, TODAY)
     data.reset_index(inplace=True)
-    
-    # Handle MultiIndex issue
     if isinstance(data.columns, pd.MultiIndex):
         data = data[[('Date', ''), ('Close', ticker)]].copy()
         data.columns = ['Date', 'Close']
-    
     return data
 
-# Load data
+
+# Load Data
 data_load_state = st.text("Loading data...")
 data = load_data(selected_asset)
 data_load_state.text("Loading data... done!")
@@ -266,11 +271,10 @@ else:
     st.stop()
 
 if feature_choice == "Stock Forecast":
-    # Show raw data
     st.subheader("📊 Raw Data")
     st.write(data.tail())
 
-    # Function to plot historical prices
+    # Plot Historical Prices
     def plot_raw_data():
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="Stock Close", line=dict(color='green')))
@@ -279,77 +283,195 @@ if feature_choice == "Stock Forecast":
     
     plot_raw_data()
 
-    st.subheader(f"📈 Stock Prediction for {selected_asset}")
+    # User selects model
+    model_choice = st.selectbox("Select Forecasting Model", ["Prophet", "LSTM", "ARIMA"])
+    st.subheader(f"📈 {model_choice} Stock Prediction for {selected_asset}")
     n_years = st.slider("🎮 Years of prediction:", 1, 5)
     period = n_years * 365
-    
+
     # Prepare Data for Forecasting
     df_train = data[['Date', 'Close']].copy()
     df_train.rename(columns={"Date": "ds", "Close": "y"}, inplace=True)
     df_train.dropna(inplace=True)
     df_train["y"] = pd.to_numeric(df_train["y"], errors='coerce')
-    
+
     if df_train.empty or df_train["y"].isna().all():
         st.error("No valid stock price data available for forecasting. Try another stock.")
         st.stop()
-    
-    # Train Prophet Model
-    m = Prophet()
-    m.fit(df_train)
-    
-    # Make Future Predictions
-    future = m.make_future_dataframe(periods=period)
-    forecast = m.predict(future)
-    
-    # Show Forecast Data
-    st.subheader("📈 Forecast Data")
-    st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail())
-    
-    # Plot Forecast
-    st.subheader("📉 Stock Price Forecast")
-    fig1 = plot_plotly(m, forecast)
-    st.plotly_chart(fig1)
-    
-    # Plot Forecast Components
-    st.subheader("📊 Forecast Components")
-    fig2 = m.plot_components(forecast)
-    st.pyplot(fig2)
 
-elif feature_choice == "Crypto Tracker":
-    st.subheader(f"💰 Real-time Crypto Price for {selected_asset}")
-    st.subheader("📊 Price Chart")
-    fig = go.Figure()
-    fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="Crypto Price", line=dict(color='blue')))
-    fig.update_layout(title_text="📅 Crypto Price Trends", xaxis_rangeslider_visible=True)
-    st.plotly_chart(fig, use_container_width=True)
-    st.write(f"📈 Latest Price of {selected_asset}: *${data['Close'].iloc[-1]:,.2f}*")
+    # Check if data exists
+if 'data' not in locals() or data is None or data.empty:
+    st.error("No data available for forecasting.")
+else:
+    # Ensure Date column is in datetime format
+    data['Date'] = pd.to_datetime(data['Date'], errors='coerce')
 
-elif feature_choice == "Portfolio Simulator":
-    st.subheader("💰 Virtual Portfolio Simulator")
-    investment = st.number_input("💸 Enter Investment Amount ($)", min_value=100, value=1000, step=100)
-    starting_price = data['Close'].iloc[0]
-    current_price = data['Close'].iloc[-1]
-    
-    profit_loss = ((current_price - starting_price) / starting_price) * 100
-    final_value = investment * (1 + profit_loss / 100)
-    
-    st.write(f"📈 Initial Investment: *${investment:,.2f}*")
-    st.write(f"📊 Current Value: *${final_value:,.2f}*")
-    st.write(f"📉 Profit/Loss: *{profit_loss:.2f}%*")
+    # Create df_train for model
+    df_train = data[['Date', 'Close']].rename(columns={"Date": "ds", "Close": "y"}).copy()
 
-    # Portfolio Growth Graph
-    st.subheader("📈 Portfolio Growth Over Time")
-    data["Portfolio Value"] = investment * (data["Close"] / starting_price)
-    fig = px.line(data, x="Date", y="Portfolio Value", title="Investment Growth Over Time")
-    st.plotly_chart(fig, use_container_width=True)
+    # Drop missing values to avoid errors
+    df_train.dropna(inplace=True)
 
-    # Investment Guidance
-    st.subheader("💡 Investment Guidance")
-    if profit_loss > 20:
-        st.success("🚀 Your investment is performing **very well**! Consider holding or reinvesting.")
-    elif profit_loss > 0:
-        st.info("📈 Your investment is **growing**! Stay invested for potential gains.")
-    elif profit_loss > -10:
-        st.warning("⚠️ Your investment is slightly down. Keep an eye on market trends.")
-    else:
-        st.error("📉 Your investment has **significant losses**. Consider reviewing your strategy.")
+    # Convert to correct data types
+    df_train['ds'] = pd.to_datetime(df_train['ds'], errors='coerce')  # Convert Date to datetime
+    df_train['y'] = pd.to_numeric(df_train['y'], errors='coerce')  # Convert Stock Price to float
+
+    # Drop any remaining NaN values
+    df_train.dropna(inplace=True)
+
+# Ensure model_choice exists before using it
+if 'model_choice' in locals():
+    if model_choice == "Prophet":
+        m = Prophet()
+        m.fit(df_train)
+
+        # Cap future period to a maximum of 5 years (1260 trading days)
+        max_forecast_days = 252 * 5  # 5 years max
+        forecast_steps = min(period * 252, max_forecast_days)  # Prevents overflow
+
+        # Generate future dates using business days
+        future = m.make_future_dataframe(periods=forecast_steps, freq='B')
+        forecast = m.predict(future)
+
+        st.write(forecast[['ds', 'yhat', 'yhat_lower', 'yhat_upper']].tail())
+
+        # Plotly visualization
+        fig1 = go.Figure()
+        fig1.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', name='Forecast', line=dict(color='blue')))
+        fig1.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_upper'], mode='lines', name='Upper Bound', line=dict(dash='dot', color='gray')))
+        fig1.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_lower'], mode='lines', name='Lower Bound', line=dict(dash='dot', color='gray')))
+        fig1.add_trace(go.Scatter(x=df_train['ds'], y=df_train['y'], mode='lines', name='Actual', opacity=0.5, line=dict(color='black')))
+        
+        st.plotly_chart(fig1)
+
+    elif model_choice == "ARIMA":
+        # Convert period (years) to trading days with an upper limit
+        max_forecast_days = 252 * 5  # Max 5 years (1260 trading days)
+        forecast_steps = min(period * 252, max_forecast_days)  # Prevent overflow
+
+        # Ensure date column is in datetime format and sorted
+        df_train['ds'] = pd.to_datetime(df_train['ds'])
+        df_train = df_train.sort_values(by='ds')
+
+        # Fit ARIMA model
+        model = ARIMA(df_train['y'], order=(5,1,0))
+        arima_fit = model.fit()
+
+        # Forecast future values
+        forecast = arima_fit.forecast(steps=forecast_steps)
+
+        # Generate future dates using pandas date_range()
+        forecast_dates = pd.date_range(start=df_train['ds'].iloc[-1] + pd.Timedelta(days=1), 
+                                    periods=forecast_steps, 
+                                    freq='B')  # 'B' for business days
+
+        # Create DataFrame for plotting
+        forecast_df = pd.DataFrame({'Date': forecast_dates, 'Stock Price': forecast.values})
+
+        # Plot results using Plotly
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=df_train['ds'], y=df_train['y'], 
+                                mode='lines', name='Actual Data', 
+                                line=dict(color='black')))
+        
+        fig.add_trace(go.Scatter(x=forecast_df['Date'], y=forecast_df['Stock Price'], 
+                                mode='lines', name='ARIMA Forecast', 
+                                line=dict(color='blue')))
+
+        # Show the plot in Streamlit
+        st.plotly_chart(fig)
+
+    elif model_choice == "LSTM":
+        scaler = MinMaxScaler()
+        data_scaled = scaler.fit_transform(df_train[['y']])
+        train_size = int(len(data_scaled) * 0.8)
+        train, test = data_scaled[:train_size], data_scaled[train_size:]
+
+        # Function to create sequences
+        def create_sequences(data, seq_length=20):  # Increased sequence length for better learning
+            X, Y = [], []
+            for i in range(len(data) - seq_length):
+                X.append(data[i:i+seq_length])
+                Y.append(data[i+seq_length])
+            return np.array(X), np.array(Y)
+
+        X_train, y_train = create_sequences(train)
+        X_test, y_test = create_sequences(test)
+
+        # Reshape for LSTM
+        X_train = X_train.reshape(X_train.shape[0], X_train.shape[1], 1)
+        X_test = X_test.reshape(X_test.shape[0], X_test.shape[1], 1)
+
+        # Define LSTM model
+        model = Sequential([
+            LSTM(100, return_sequences=True, input_shape=(X_train.shape[1], 1)),  # Increased LSTM units
+            LSTM(100, return_sequences=False),
+            Dense(50),
+            Dense(25),
+            Dense(1)
+        ])
+
+        model.compile(optimizer='adam', loss='mean_squared_error')
+        model.fit(X_train, y_train, epochs=20, batch_size=16, verbose=1)  # Increased epochs for better training
+
+        # Make predictions
+        predictions = model.predict(X_test)
+        predictions = scaler.inverse_transform(predictions)
+
+        # Generate future dates aligned with predictions
+        forecast_dates = df_train['ds'].iloc[train_size+20:train_size+20+len(predictions)]  # Adjusted for new sequence length
+
+        # Create DataFrame for plotting
+        lstm_forecast_df = pd.DataFrame({'Date': forecast_dates, 'Stock Price': predictions.flatten()})
+        
+        # Plot results
+        st.line_chart(lstm_forecast_df.set_index("Date"))
+
+# Handle Feature Choices Separately
+if 'feature_choice' in locals():
+    if feature_choice == "Crypto Tracker":
+        if 'data' not in locals() or data is None or data.empty:
+            st.error("No data available for the selected cryptocurrency.")
+        else:
+            st.subheader(f"💰 Real-time Crypto Price for {selected_asset}")
+            
+            # Ensure Date column is in datetime format
+            data['Date'] = pd.to_datetime(data['Date'])
+
+            # Create plot
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="Crypto Price", line=dict(color='blue')))
+            fig.update_layout(title_text="📅 Crypto Price Trends", xaxis_rangeslider_visible=True)
+
+            # Display chart
+            st.plotly_chart(fig, use_container_width=True)
+
+            # Show latest price
+            if not data['Close'].isna().all():  # Ensure Close column has valid values
+                st.write(f"📈 Latest Price of {selected_asset}: *${data['Close'].iloc[-1]:,.2f}*")
+            else:
+                st.warning("No valid price data available.")
+
+    elif feature_choice == "Portfolio Simulator":
+        if 'data' not in locals() or data is None or data.empty:
+            st.error("No data available for portfolio simulation.")
+        else:
+            st.subheader("💰 Virtual Portfolio Simulator")
+
+            # Check if Close prices are valid
+            if data['Close'].isna().all():
+                st.warning("No valid price data available for simulation.")
+            else:
+                # Get initial and current prices
+                investment = st.number_input("💸 Enter Investment Amount ($)", min_value=100, value=1000, step=100)
+                starting_price = data['Close'].dropna().iloc[0]  # Drop NaN values before getting first price
+                current_price = data['Close'].dropna().iloc[-1]  # Drop NaN values before getting last price
+
+                # Calculate profit/loss
+                profit_loss = ((current_price - starting_price) / starting_price) * 100
+                final_value = investment * (1 + profit_loss / 100)
+
+                # Display results
+                st.write(f"📈 Initial Investment: *${investment:,.2f}*")
+                st.write(f"📊 Current Value: *${final_value:,.2f}*")
+                st.write(f"📉 Profit/Loss: *{profit_loss:.2f}%*")
