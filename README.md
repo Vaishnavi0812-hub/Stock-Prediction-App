@@ -8,15 +8,25 @@ The app provides users with a seamless experience, including login authenticatio
 
 🔑 Key Features:
 
+<<<<<<< HEAD
 User Authentication & Portfolio Simulation: Secure login and account creation, enabling users to save credentials and track portfolio performance.
 Forecasting Models: Choose between Prophet, ARIMA, and LSTM machine learning models for stock and crypto predictions.
 Real-Time Data & Customizable Timeframe: Fetch real-time stock/crypto data with the Yahoo Finance API and predict prices for different time frames (1-5 years).
 Interactive Data Visualization: Interactive charts powered by Plotly for visualizing historical and forecasted data.
 Multi-Asset Support: Forecast for a variety of assets, including major stocks (AAPL, GOOG) and cryptocurrencies (BTC-USD, ETH-USD).
 
+=======
+1. User Authentication & Portfolio Simulation: Secure login and account creation, enabling users to save credentials and track portfolio performance.
+2. Forecasting Models: Choose between Prophet, ARIMA, and LSTM machine learning models for stock and crypto predictions.
+3. Real-Time Data & Customizable Timeframe: Fetch real-time stock/crypto data with the Yahoo Finance API and predict prices for different time frames (1-5 years).
+4. Interactive Data Visualization: Interactive charts powered by Plotly for visualizing historical and forecasted data.
+5. Multi-Asset Support: Forecast for a variety of assets, including major stocks (AAPL, GOOG) and cryptocurrencies (BTC-USD, ETH-USD).
+
+
+>>>>>>> ebc677e3c43567eb1bbea2258b005d1a8a41e1c5
 🌐 Technologies Used:
 
-Frontend: Streamlit, Plotly, HTML, CSS, JavaScript
-Backend: Python, Prophet, ARIMA, LSTM, Pandas, Numpy
-Data Sources: Yahoo Finance API
-Other Libraries: TensorFlow/Keras, Statsmodels
+1. Frontend: Streamlit, Plotly, HTML, CSS, JavaScript
+2. Backend: Python, Prophet, ARIMA, LSTM, Pandas, Numpy
+3. Data Sources: Yahoo Finance API
+4. Other Libraries: TensorFlow/Keras, Statsmodels
