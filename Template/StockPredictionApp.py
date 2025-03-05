@@ -344,6 +344,7 @@ if 'model_choice' in locals():
         
         st.plotly_chart(fig1)
 
+
     elif model_choice == "ARIMA":
         # Convert period (years) to trading days with an upper limit
         max_forecast_days = 252 * 5  # Max 5 years (1260 trading days)
@@ -380,6 +381,8 @@ if 'model_choice' in locals():
 
         # Show the plot in Streamlit
         st.plotly_chart(fig)
+
+
 
     elif model_choice == "LSTM":
         scaler = MinMaxScaler()
