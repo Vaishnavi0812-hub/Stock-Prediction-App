@@ -1,6 +1,6 @@
 📈 Stock Sage (A Stock and Crypto Forecasting App)
 
-⏳ Project Overview:
+Project Overview:
 
 The Stock & Crypto Forecasting App is a web-based application built using Streamlit, which allows users to forecast stock and cryptocurrency prices using advanced machine learning techniques. This tool incorporates machine learning models like Prophet, ARIMA, and LSTM for accurate predictions, alongside interactive visualizations powered by Plotly.
 
